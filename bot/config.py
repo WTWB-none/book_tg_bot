@@ -12,13 +12,13 @@ import os
 # Telegram bot token.  You should set an environment variable
 # ``TELEGRAM_BOT_TOKEN`` or replace the placeholder below with your
 # actual token.
-TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "8256112334:AAG0D1fDI98c11ljCRD69C_I6BTkvH97Deg")
+TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 
 # Tribute API configuration.  In order to verify subscriptions via the
 # remote service the bot makes authenticated HTTP requests using this
 # API key.
 TRIBUTE_API_URL = "https://tribute.tg/api/v1/subscribers"
-TRIBUTE_API_KEY = "cf0bee07-b00f-47d4-97f3-fdb65fa1"
+TRIBUTE_API_KEY = os.environ.get("TRIBUTE_API_KEY", "")
 
 # List of administrator Telegram user IDs.  Only these users can add
 # books, chapters or manual subscribers.  Populate this list with your
