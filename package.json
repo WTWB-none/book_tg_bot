@@ -1,0 +1,17 @@
+{
+  "name": "book-bot-project",
+  "version": "1.0.0",
+  "description": "Telegram bot with web interface for book library",
+  "scripts": {
+    "build": "cd webapp && npm install && npm run build",
+    "dev": "cd webapp && npm run dev",
+    "install-webapp": "cd webapp && npm install",
+    "install-functions": "cd netlify/functions && npm install"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
