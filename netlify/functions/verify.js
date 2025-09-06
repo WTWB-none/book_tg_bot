@@ -28,7 +28,11 @@ exports.handler = async (event, context) => {
     const pathParts = event.path.split('/');
     const telegramUserId = parseInt(pathParts[pathParts.length - 1]);
 
+    console.log('Verify function called with path:', event.path);
+    console.log('Extracted user ID:', telegramUserId);
+
     if (isNaN(telegramUserId)) {
+      console.log('Invalid user ID:', pathParts);
       return {
         statusCode: 400,
         headers: {

@@ -20,6 +20,17 @@
     </div>
 
     <div class="debug-section">
+      <h2>Тестирование API</h2>
+      <button @click="testAPI" :disabled="apiLoading">
+        {{ apiLoading ? 'Тестируем...' : 'Тест API' }}
+      </button>
+      <div v-if="apiResult">
+        <h3>Результат API:</h3>
+        <pre>{{ apiResult }}</pre>
+      </div>
+    </div>
+
+    <div class="debug-section">
       <h2>URL параметры</h2>
       <p><strong>Полный URL:</strong> {{ window.location.href }}</p>
       <p><strong>UID из URL:</strong> {{ getUidFromUrl() }}</p>
@@ -45,6 +56,8 @@ const authStore = useAuthStore()
 const { isSubscribed, subscriptionChecked, loading, currentUserId, telegramUser, isTelegramReady, checkSubscription } = authStore
 
 const telegramWebAppInfo = ref('')
+const apiLoading = ref(false)
+const apiResult = ref('')
 
 onMounted(() => {
   if (window.Telegram?.WebApp) {
@@ -68,6 +81,21 @@ onMounted(() => {
 const getUidFromUrl = () => {
   const urlParams = new URLSearchParams(window.location.search)
   return urlParams.get('uid') || 'Не найден'
+}
+
+const testAPI = async () => {
+  apiLoading.value = true
+  apiResult.value = ''
+  
+  try {
+    const response = await fetch('/api/test')
+    const data = await response.json()
+    apiResult.value = JSON.stringify(data, null, 2)
+  } catch (error) {
+    apiResult.value = `Ошибка: ${error.message}`
+  } finally {
+    apiLoading.value = false
+  }
 }
 </script>
 

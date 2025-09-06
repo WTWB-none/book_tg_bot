@@ -30,6 +30,11 @@
   to = "/.netlify/functions/verify"
   status = 200
 
+[[redirects]]
+  from = "/api/test"
+  to = "/.netlify/functions/test"
+  status = 200
+
 # Перенаправления для SPA (должно быть последним)
 [[redirects]]
   from = "/*"

@@ -6,7 +6,15 @@ const DB_PATH = path.join(__dirname, 'app.db');
 
 // Создание подключения к базе данных
 function getDb() {
-  return new Database(DB_PATH);
+  try {
+    console.log('Connecting to database at:', DB_PATH);
+    const db = new Database(DB_PATH);
+    console.log('Database connected successfully');
+    return db;
+  } catch (error) {
+    console.error('Database connection error:', error);
+    throw error;
+  }
 }
 
 // Получение списка книг

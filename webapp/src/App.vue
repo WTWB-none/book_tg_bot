@@ -11,9 +11,16 @@ const isTelegramReady = ref(false)
 const telegramUser = ref<any>(null)
 
 onMounted(() => {
-  // Проверяем, что мы в Telegram WebApp
+  // Проверяем, что мы в Telegram WebApp согласно официальной документации
   if (window.Telegram?.WebApp) {
     const webApp = window.Telegram.WebApp
+    
+    // Проверяем initData - если пустой, значит не в Telegram
+    if (webApp.initData === '') {
+      console.log('Not running in Telegram WebApp - initData is empty')
+      isTelegramReady.value = true // Разрешаем работу для тестирования
+      return
+    }
     
     // Расширяем приложение на весь экран
     webApp.expand()
@@ -30,10 +37,12 @@ onMounted(() => {
       platform: webApp.platform,
       version: webApp.version,
       initData: webApp.initData,
-      initDataUnsafe: webApp.initDataUnsafe
+      initDataUnsafe: webApp.initDataUnsafe,
+      colorScheme: webApp.colorScheme,
+      themeParams: webApp.themeParams
     })
   } else {
-    console.log('Not running in Telegram WebApp')
+    console.log('Not running in Telegram WebApp - window.Telegram not available')
     // Для тестирования вне Telegram
     isTelegramReady.value = true
   }
