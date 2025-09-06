@@ -13,22 +13,29 @@ const telegramUser = ref<any>(null)
 onMounted(() => {
   // Проверяем, что мы в Telegram WebApp
   if (window.Telegram?.WebApp) {
-    isTelegramReady.value = true
-    telegramUser.value = window.Telegram.WebApp.initDataUnsafe?.user || null
+    const webApp = window.Telegram.WebApp
     
     // Расширяем приложение на весь экран
-    window.Telegram.WebApp.expand()
+    webApp.expand()
     
     // Настраиваем тему
-    window.Telegram.WebApp.ready()
+    webApp.ready()
+    
+    // Получаем данные пользователя
+    telegramUser.value = webApp.initDataUnsafe?.user || null
+    isTelegramReady.value = true
     
     console.log('Telegram WebApp initialized:', {
       user: telegramUser.value,
-      platform: window.Telegram.WebApp.platform,
-      version: window.Telegram.WebApp.version
+      platform: webApp.platform,
+      version: webApp.version,
+      initData: webApp.initData,
+      initDataUnsafe: webApp.initDataUnsafe
     })
   } else {
     console.log('Not running in Telegram WebApp')
+    // Для тестирования вне Telegram
+    isTelegramReady.value = true
   }
 })
 </script>

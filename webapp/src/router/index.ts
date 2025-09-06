@@ -23,6 +23,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'forbidden',
     component: () => import('@/views/ForbiddenView.vue'),
   },
+  {
+    path: '/debug',
+    name: 'debug',
+    component: () => import('@/views/DebugView.vue'),
+  },
 ]
 
 const router = createRouter({
@@ -32,13 +37,30 @@ const router = createRouter({
 
 // Router guard for subscription check
 router.beforeEach(async (to, from, next) => {
-  if (to.name === 'forbidden') {
+  // Пропускаем отладочную страницу и страницу запрета
+  if (to.name === 'forbidden' || to.name === 'debug') {
     return next()
   }
 
   const authStore = useAuthStore()
   
-  // Extract UID from query parameters
+  // Для Mini App получаем UID из Telegram WebApp
+  if (authStore.isTelegramReady && authStore.telegramUser?.id) {
+    const uid = authStore.telegramUser.id.toString()
+    
+    // Check subscription if not already checked
+    if (!authStore.subscriptionChecked) {
+      await authStore.checkSubscription(uid)
+    }
+
+    if (!authStore.isSubscribed) {
+      return next({ name: 'forbidden' })
+    }
+    
+    return next()
+  }
+  
+  // Fallback: Extract UID from query parameters
   const uid = to.query.uid as string
   if (!uid) {
     return next({ name: 'forbidden' })

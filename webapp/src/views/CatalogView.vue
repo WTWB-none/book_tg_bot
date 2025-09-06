@@ -57,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useBooksStore } from '@/stores/books'
 import { useAuthStore } from '@/stores/auth'
 
@@ -65,11 +65,23 @@ const booksStore = useBooksStore()
 const authStore = useAuthStore()
 
 onMounted(async () => {
-  // Проверяем подписку пользователя
-  await authStore.checkSubscription()
+  // Ждем инициализации Telegram WebApp
+  const checkTelegramReady = () => {
+    if (authStore.isTelegramReady) {
+      // Проверяем подписку пользователя
+      authStore.checkSubscription()
+    } else {
+      // Проверяем каждые 100мс, пока Telegram не инициализируется
+      setTimeout(checkTelegramReady, 100)
+    }
+  }
   
-  // Загружаем книги только если пользователь подписан
-  if (authStore.isSubscribed) {
+  checkTelegramReady()
+})
+
+// Следим за изменениями статуса подписки
+watch(() => authStore.isSubscribed, (isSubscribed) => {
+  if (isSubscribed) {
     booksStore.fetchBooks()
   }
 })

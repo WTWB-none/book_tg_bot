@@ -13,18 +13,50 @@ export const useAuthStore = defineStore('auth', () => {
   // Получаем UID из Telegram или из URL параметров
   const currentUserId = computed(() => {
     if (telegramUser.value?.id) {
+      console.log('Using Telegram user ID:', telegramUser.value.id)
       return telegramUser.value.id.toString()
     }
     
     // Fallback: получаем из URL параметров
     const urlParams = new URLSearchParams(window.location.search)
-    return urlParams.get('uid') || ''
+    const uidFromUrl = urlParams.get('uid') || ''
+    console.log('Using URL UID:', uidFromUrl)
+    return uidFromUrl
   })
 
   const checkSubscription = async (uid?: string) => {
-    const userId = uid || currentUserId.value
+    // Если передан конкретный UID, используем его
+    if (uid) {
+      loading.value = true
+      try {
+        const response = await axios.get(`/api/verify/${uid}`)
+        isSubscribed.value = response.data.subscribed
+      } catch (error) {
+        console.error('Subscription check failed:', error)
+        isSubscribed.value = false
+      } finally {
+        subscriptionChecked.value = true
+        loading.value = false
+      }
+      return
+    }
+
+    // Ждем инициализации Telegram WebApp
+    if (!isTelegramReady.value) {
+      console.log('Waiting for Telegram WebApp initialization...')
+      return
+    }
+
+    const userId = currentUserId.value
+    console.log('Checking subscription for user ID:', userId)
     
-    if (!userId || subscriptionChecked.value) {
+    if (!userId) {
+      console.log('No user ID available')
+      return
+    }
+    
+    if (subscriptionChecked.value) {
+      console.log('Subscription already checked')
       return
     }
 
