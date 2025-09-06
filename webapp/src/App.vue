@@ -5,15 +5,30 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { useTelegram } from './composables/useTelegram'
+import { onMounted, ref } from 'vue'
 
-const { isReady: isTelegramReady, user: telegramUser } = useTelegram()
+const isTelegramReady = ref(false)
+const telegramUser = ref<any>(null)
 
 onMounted(() => {
-  // Логируем информацию о пользователе Telegram
-  if (telegramUser.value) {
-    console.log('Telegram user:', telegramUser.value)
+  // Проверяем, что мы в Telegram WebApp
+  if (window.Telegram?.WebApp) {
+    isTelegramReady.value = true
+    telegramUser.value = window.Telegram.WebApp.initDataUnsafe?.user || null
+    
+    // Расширяем приложение на весь экран
+    window.Telegram.WebApp.expand()
+    
+    // Настраиваем тему
+    window.Telegram.WebApp.ready()
+    
+    console.log('Telegram WebApp initialized:', {
+      user: telegramUser.value,
+      platform: window.Telegram.WebApp.platform,
+      version: window.Telegram.WebApp.version
+    })
+  } else {
+    console.log('Not running in Telegram WebApp')
   }
 })
 </script>
