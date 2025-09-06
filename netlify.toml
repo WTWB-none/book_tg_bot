@@ -1,0 +1,59 @@
+[build]
+  # Директория для сборки (Vue приложение)
+  publish = "webapp/dist"
+  
+  # Команда для сборки
+  command = "cd webapp && npm install && npm run build"
+
+[build.environment]
+  # Версия Node.js
+  NODE_VERSION = "18"
+
+# API перенаправления
+[[redirects]]
+  from = "/api/books"
+  to = "/.netlify/functions/books"
+  status = 200
+
+[[redirects]]
+  from = "/api/book/*"
+  to = "/.netlify/functions/book"
+  status = 200
+
+[[redirects]]
+  from = "/api/book/*/chapter/*"
+  to = "/.netlify/functions/chapter"
+  status = 200
+
+[[redirects]]
+  from = "/api/verify/*"
+  to = "/.netlify/functions/verify"
+  status = 200
+
+# Перенаправления для SPA (должно быть последним)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# API функции
+[functions]
+  # Директория с serverless функциями
+  directory = "netlify/functions"
+
+# Заголовки безопасности
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# CORS для API
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
